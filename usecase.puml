@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+actor "Human Player" as Human
+
+rectangle "Chess Application" {
+  usecase "Start Game" as UC1
+  usecase "Make Move" as UC2
+  usecase "View Legal Moves" as UC3
+  usecase "Promote Pawn" as UC4
+  usecase "Castle" as UC5
+  usecase "Resign Game" as UC6
+  usecase "Offer/Accept Draw" as UC7
+  usecase "View Move History" as UC8
+  usecase "Restart Game" as UC9
+}
+
+Human --> UC1
+Human --> UC2
+Human --> UC6
+Human --> UC7
+Human --> UC8
+Human --> UC9
+
+UC2 ..> UC3 : <<include>>
+UC4 ..> UC2 : <<extend>>
+UC5 ..> UC2 : <<extend>>
+@enduml

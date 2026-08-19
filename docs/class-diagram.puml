@@ -1,0 +1,121 @@
+@startuml class-diagram
+skinparam classAttributeIconSize 0
+hide circle
+
+class ChessApplication {
+  -currentGame : Game
+  +startGame(whiteName : String, blackName : String) : void
+  +restartGame() : void
+}
+
+class Player {
+  -name : String
+  -color : Color
+}
+
+class Game {
+  -currentTurn : Color
+  -moveHistory : List<Move>
+  -isOver : boolean
+  -result : String
+  +makeMove(start : Position, end : Position) : Move
+  +getLegalMoves(position : Position) : List<Position>
+  +isInCheck(color : Color) : boolean
+  +isCheckmate(color : Color) : boolean
+  +isStalemate(color : Color) : boolean
+  +resign(color : Color) : void
+  +offerDraw(color : Color) : void
+  +acceptDraw() : void
+  +getMoveHistory() : List<Move>
+}
+
+class Board {
+  -enPassantTarget : Position
+  +getPiece(position : Position) : Piece
+  +setPiece(position : Position, piece : Piece) : void
+  +applyMove(move : Move) : void
+  +isSquareAttacked(position : Position, byColor : Color) : boolean
+  +findKing(color : Color) : Position
+  +clone() : Board
+  +render() : String
+}
+
+class Position {
+  -row : int
+  -col : int
+  +isOnBoard() : boolean
+  +toAlgebraic() : String
+  +{static} fromAlgebraic(text : String) : Position
+}
+
+abstract class Piece {
+  -color : Color
+  -hasMoved : boolean
+  +{abstract} getRawMoves(position : Position, board : Board) : List<Position>
+  +{abstract} symbolLetter() : String
+}
+
+class Pawn
+class Knight
+class Bishop
+class Rook
+class Queen
+class King
+
+class Move {
+  -start : Position
+  -end : Position
+  -isCastleKingside : boolean
+  -isCastleQueenside : boolean
+  -isEnPassant : boolean
+  -promotionPieceType : Class
+  +toAlgebraic() : String
+}
+
+enum Color {
+  WHITE
+  BLACK
+  +opposite() : Color
+}
+
+class DrawOffer {
+  -status : String
+  +accept() : void
+  +decline() : void
+}
+
+' -- inheritance --
+Piece <|-- Pawn
+Piece <|-- Knight
+Piece <|-- Bishop
+Piece <|-- Rook
+Piece <|-- Queen
+Piece <|-- King
+
+' -- application owns the current game and its two players --
+ChessApplication "1" *-- "0..1" Game : currentGame
+ChessApplication "1" o-- "2" Player : players
+
+' -- a game is played on one board, by two players, produces a move history --
+Game "1" *-- "1" Board : board
+Game "1" o-- "2" Player : white / black
+Game "1" *-- "*" Move : moveHistory
+Game "1" o-- "0..1" DrawOffer : pendingOffer
+
+' -- the board holds up to 32 pieces, addressed by position --
+Board "1" o-- "0..32" Piece : pieces
+Board ..> Position : uses
+
+' -- pieces and players are colored --
+Piece "*" --> "1" Color : color
+Player "1" --> "1" Color : color
+
+' -- a move references the piece that moved, the piece it may have captured, and its squares --
+Move "1" --> "1" Piece : movedPiece
+Move "0..1" --> "0..1" Piece : capturedPiece
+Move ..> Position : start / end
+
+' -- a draw offer names the player who made it --
+DrawOffer "1" --> "1" Player : offeredBy
+
+@enduml

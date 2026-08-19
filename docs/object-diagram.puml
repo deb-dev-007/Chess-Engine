@@ -1,0 +1,89 @@
+@startuml object-diagram
+hide circle
+
+title Snapshot: after 1. e4 e5 2. Nf3 (Black to move)
+
+object "app : ChessApplication" as app
+
+object "game1 : Game" as game1 {
+  currentTurn = BLACK
+  isOver = false
+  result = null
+}
+
+object "board1 : Board" as board1 {
+  enPassantTarget = null
+}
+
+object "alice : Player" as alice {
+  name = "Alice"
+  color = WHITE
+}
+
+object "bob : Player" as bob {
+  name = "Bob"
+  color = BLACK
+}
+
+object "move1 : Move" as move1 {
+  start = e2
+  end = e4
+  isCastleKingside = false
+  isCastleQueenside = false
+  isEnPassant = false
+  promotionPieceType = null
+}
+
+object "move2 : Move" as move2 {
+  start = e7
+  end = e5
+  isCastleKingside = false
+  isCastleQueenside = false
+  isEnPassant = false
+  promotionPieceType = null
+}
+
+object "move3 : Move" as move3 {
+  start = g1
+  end = f3
+  isCastleKingside = false
+  isCastleQueenside = false
+  isEnPassant = false
+  promotionPieceType = null
+}
+
+object "whitePawnE4 : Pawn" as whitePawnE4 {
+  color = WHITE
+  hasMoved = true
+}
+
+object "blackPawnE5 : Pawn" as blackPawnE5 {
+  color = BLACK
+  hasMoved = true
+}
+
+object "whiteKnightF3 : Knight" as whiteKnightF3 {
+  color = WHITE
+  hasMoved = true
+}
+
+app --> game1 : currentGame
+app --> alice : players
+app --> bob : players
+
+game1 --> board1 : board
+game1 --> alice : white
+game1 --> bob : black
+game1 --> move1 : moveHistory[0]
+game1 --> move2 : moveHistory[1]
+game1 --> move3 : moveHistory[2]
+
+board1 --> whitePawnE4 : pieces (at e4)
+board1 --> blackPawnE5 : pieces (at e5)
+board1 --> whiteKnightF3 : pieces (at f3)
+
+move1 --> whitePawnE4 : movedPiece
+move2 --> blackPawnE5 : movedPiece
+move3 --> whiteKnightF3 : movedPiece
+
+@enduml

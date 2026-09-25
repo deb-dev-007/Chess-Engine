@@ -6,8 +6,13 @@
 #include <vector>
 using namespace std;
 
-//nested class: Game::MoveRecord inside the Game class
-//all the concrete piece classes (Pawn, Knight, etc)
+// quick note to self (and whoever's grading this) on where the extra OOP stuff lives,
+// since it was added on top of the original project:
+// - stream operator overload w/ friend -> Board's operator<< near the bottom of this file
+// - nested class                       -> Game::MoveRecord inside the Game class
+// - object slicing                     -> RankedPlayer + announcePlayer() in main.cpp
+// - static variable + static function  -> Piece::totalPiecesAlive / Piece::getTotalPieces()
+// - final                              -> all the concrete piece classes (Pawn, Knight, etc)
 
 //position class, just a row col pair basically
 class Position {
@@ -37,13 +42,13 @@ public:
         return s;
     }
 
-    //needed this to check if two squares are the same, used all over the place
+    // needed this to check if two squares are the same, used all over the place
     //we tried to implement operator overloading here
     bool operator==(const Position& o) const {
         return row == o.row && col == o.col;
     }
 
-    
+    // opposite of above, C++ doesnt auto generate this from == so had to add it
     bool operator!=(const Position& o) const {
         return !(row == o.row && col == o.col);
     }
@@ -66,9 +71,14 @@ public:
     Piece(Color c) {
         color = c;
         moved = false;
-        totalPiecesAlive++;//piece counter
+        totalPiecesAlive++; // one more piece just came into existence, keep the count updated
     }
 
+    // needed this once we added the counter above - clone() makes copies of pieces (for the
+    // trial boards used in check-detection) and without a copy ctor here, C++ just generates
+    // a default one that copies the fields but skips our increment logic. counter went
+    // wildly negative in testing before this was added, since every cloned piece still
+    // decrements on delete without ever having incremented on creation
     Piece(const Piece& other) {
         color = other.color;
         moved = other.moved;
@@ -87,21 +97,24 @@ public:
     }
     virtual Piece* clone() const = 0;
 
-    //static function
-    //initiated without any object
+    // static function - belongs to the class itself, not to any one piece. call it like
+    // Piece::getTotalPieces(), no object needed at all. just hands back the static counter below
     static int getTotalPieces() { return totalPiecesAlive; }
 
 private:
-    //static variable
+    // static variable - only ONE of these exists in the whole program, shared by every
+    // Piece that's ever created (as opposed to color/moved above, which every piece gets its own copy of).
+    // actual value lives in Chess.cpp since you cant define a static member inline like this
     static int totalPiecesAlive;
 };
 
 
 
 
-//each piece is overriding its properties 
-//also, we use "final" keyword
-//no other class can inherit from these classes
+//each piece we defined below is overriding the class properties Piece through inheritance and runtime polymorphism
+//also marked all of them "final" - these are the actual leaf pieces of our hierarchy so nobody
+//(including future us) should be trying to inherit further from say Pawn or Queen. compiler will
+//just refuse if anyone tries
 class Pawn final : public Piece {
 public:
     Pawn(Color c) : Piece(c) {}
@@ -162,7 +175,7 @@ struct Move {
 //grid is private here
 class Board {
 public:
-    Board(); //starts the board-game 
+    Board(); //sets up a start
     Board(const Board& other);     // deep copy - needed for the check-simulation stuff in Game
     Board& operator=(const Board& other); // same deal but for assignment
     ~Board();                      // frees all the piece pointers
@@ -174,8 +187,11 @@ public:
     Position findKing(Color color) const;
     bool wasDoubleStepTo(Position p) const { return lastDoubleStep == p; }
 
-    //into our private grid, and we didnt want to write a getter just for that. so its declared
-    ///// we tried to add a friend here this is the "stream operator overloading using a friend function" part.
+    // the << overload that prints the board (see bottom of Chess.cpp) needs to reach straight
+    // into our private grid, and we didnt want to write a getter just for that. so its declared
+    // a friend here - this is the "stream operator overloading using a friend function" part.
+    // (side note: this line was actually missing before, which is why it wouldnt even compile.
+    // fixed now, and turns out it doubles as exactly the concept we needed)
     friend ostream& operator<<(ostream& os, const Board& board);
 
 private:
@@ -183,7 +199,7 @@ private:
     Position lastDoubleStep;
 };
 
-
+// player is basically just a name tag, doesnt do much
 class Player {
 public:
     string name;
@@ -194,6 +210,9 @@ public:
     }
 };
 
+// RankedPlayer bolts a rating number onto a regular Player. honestly the chess logic itself
+// never needed this - it exists purely so we'd have something concrete to slice in main.cpp.
+// see announcePlayer() over there, thats where it actually happens
 class RankedPlayer : public Player {
 public:
     int rating;

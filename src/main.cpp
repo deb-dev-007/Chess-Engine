@@ -6,14 +6,6 @@ string colorName(Color c) {
     return "Black";
 }
 
-//takes a Player BY VALUE on purpose, not by reference or pointer. if you hand this a
-//RankedPlayer, the extra "rating" part just gets chopped off on the way in and all thats left
-//inside the function is a plain Player - that's object slicing. added this specifically to
-//show we understand the concept, the chess logic itself doesnt actually need this function
-void announcePlayer(Player p) {
-    cout << p.name << " is ready to play.\n";
-}
-
 void printHelp() {
     cout << "Commands:\n";
     cout << "  e2 e4        move a piece\n";
@@ -37,20 +29,11 @@ int main() {
     if (blackName == "") blackName = "Black";
 
     Game game(whiteName, blackName);
-
-    //giving both players a made-up rating just so there's actually something to slice off below.
-    //real rating doesnt matter here, its just a number to prove the point
-    RankedPlayer whiteRanked(whiteName, Color::WHITE, 1200);
-    RankedPlayer blackRanked(blackName, Color::BLACK, 1200);
-    announcePlayer(whiteRanked); //slicing happens right at this call, rating is gone the moment it enters announcePlayer
-    announcePlayer(blackRanked);
-
     printHelp();
     bool drawPending = false;
 
     while (true) {
         cout << "\n" << game.board();
-        cout << "(pieces on board: " << Piece::getTotalPieces() << ")\n"; // static function - no Piece object needed to call this
 
         if (game.status() != GameStatus::ONGOING) {
             if (game.status() == GameStatus::WHITE_WINS) cout << whiteName << " (White) wins!\n";

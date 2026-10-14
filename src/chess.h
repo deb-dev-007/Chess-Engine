@@ -64,7 +64,7 @@ public:
     bool moved;
 
     Piece(Color c) {
-        this->Color = c;
+        this->color = c;
         this->moved = false;
         totalPiecesAlive++;//piece counter
     }

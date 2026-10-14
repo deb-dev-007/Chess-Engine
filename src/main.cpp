@@ -6,6 +6,11 @@ string colorName(Color c) {
     return "Black";
 }
 
+//object slicing (the rating part is sliced)
+void announcePlayer(Player p) {
+    cout << p.name << " is ready to play.\n";
+}
+
 void printHelp() {
     cout << "Commands:\n";
     cout << "  e2 e4        move a piece\n";
@@ -29,11 +34,19 @@ int main() {
     if (blackName == "") blackName = "Black";
 
     Game game(whiteName, blackName);
+
+    //hardocded ratings for now
+    RankedPlayer whiteRanked(whiteName, Color::WHITE, 1200);
+    RankedPlayer blackRanked(blackName, Color::BLACK, 1200);
+    announcePlayer(whiteRanked); //here the rating is actually sliced
+    announcePlayer(blackRanked);
+
     printHelp();
     bool drawPending = false;
 
     while (true) {
         cout << "\n" << game.board();
+        cout << "(pieces on board: " << Piece::getTotalPieces() << ")\n"; //static function
 
         if (game.status() != GameStatus::ONGOING) {
             if (game.status() == GameStatus::WHITE_WINS) cout << whiteName << " (White) wins!\n";
@@ -62,7 +75,7 @@ int main() {
 
         } else if (first == "history") {
             const vector<string>& h = game.history();
-            if (h.empty()) cout << "(no moves yet)\n";
+            if (h.empty()) cout << "(no moves)\n";
             for (int i = 0; i < (int)h.size(); i++) cout << (i + 1) << ". " << h[i] << "\n";
 
         } else if (first == "restart") {

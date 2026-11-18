@@ -1,6 +1,6 @@
-# ♟️ Terminal Chess — C++ Object-Oriented Programming Project
+#  Terminal Chess — C++ Object-Oriented Programming Project
 
-## 📌 Project Overview
+##  Project Overview
 
 **Terminal Chess** is a two-player chess game developed in C++ that runs entirely in the terminal. The project implements the standard chessboard, chess pieces, movement rules, legal move validation, and game management functionalities.
 
@@ -10,7 +10,7 @@ The game allows two players to play chess against each other using algebraic not
 
 ---
 
-## 🎯 Objectives
+##  Objectives
 
 - Implement a functional two-player chess game in C++.
 - Understand and apply Object-Oriented Programming concepts.
@@ -25,7 +25,7 @@ The game allows two players to play chess against each other using algebraic not
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 | Technology | Purpose |
 |---|---|
@@ -36,7 +36,7 @@ The game allows two players to play chess against each other using algebraic not
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ### `chess.h`
 
@@ -81,7 +81,7 @@ Contains the main function, player input handling, command-line interface, game 
 
 ---
 
-# 🧠 C++ Concepts Used
+#  C++ Concepts Used
 
 This section explains the major C++ concepts implemented in the project, along with their locations and practical applications.
 
